@@ -12,3 +12,7 @@ Once done, in the same location as your `network_data.yaml`, please create (or c
 **Available Commands**
 
 - Search command (gets player information from the MySQL database)
+- History command (gets a player's punish history from the MySQL database)
+- About command (gives info about your network)
+- Ip command (sends the network's IP)
+- Website command (sends the network's website)

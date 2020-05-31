@@ -1,0 +1,7 @@
+token: "yes"
+prefix: "!"
+ownerId: "123456"
+activityType: "WATCHING"
+activityMessage: "Gabriella"
+activityUrl: "null"
+configVersion: "1.0-beta"

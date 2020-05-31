@@ -5,6 +5,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import me.cps.bot.database.DatabaseHub;
 import net.dv8tion.jda.api.EmbedBuilder;
 
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.util.HashMap;
 
@@ -24,6 +25,10 @@ public class PlayerInfoCommand extends Command {
         this.aliases = new String[]{"playerinfo", "searchplayer"};
         this.arguments = "<player name>";
         this.category = new Category("Players");
+        this.help = "Get information about a player.";
+        this.guildOnly = true;
+        this.cooldown = 10; //you can change this if you desire
+        this.cooldownScope = CooldownScope.GUILD;
     }
 
     @Override
@@ -37,10 +42,17 @@ public class PlayerInfoCommand extends Command {
         HashMap<String, String> data = DatabaseHub.getInstance().getPlayerAccountData(event.getArgs());
         EmbedBuilder eb = new EmbedBuilder();
 
-        if (data.isEmpty()) {
-            eb.setTitle("Whoops! An error occured.");
+        if (DatabaseHub.getInstance().uuidFromName(event.getArgs()) == null) {
+            eb.setTitle("Whoops! An error occurred.");
             eb.setColor(Color.red);
             eb.addField("What happen?", "The player you specified has never logged into the server.", false);
+            return;
+        }
+
+        if (data.isEmpty()) {
+            eb.setTitle("Whoops! An error occurred.");
+            eb.setColor(Color.red);
+            eb.addField("What happen?", "There was an internal error. Please contact the server administrator.", false);
         } else {
             eb.setTitle("Player Data for " + event.getArgs());
             eb.setColor(Color.green);

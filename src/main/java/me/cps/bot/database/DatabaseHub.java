@@ -1,11 +1,14 @@
 package me.cps.bot.database;
 
-import me.cps.bot.CPSBot;
 import me.cps.bot.networkdata.BotNetworkDataHub;
-import me.cps.bot.networkdata.NetworkDataBase;
+import me.cps.root.punish.PunishData;
+import me.cps.root.punish.PunishDuration;
+import me.cps.root.punish.PunishType;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Curious Productions Bot
@@ -31,7 +34,6 @@ public class DatabaseHub {
         this.password = BotNetworkDataHub.getInstance().getNetworkDataBase().getMysqlPw();
         this.database = BotNetworkDataHub.getInstance().getNetworkDataBase().getMysqlDb();
         this.port = BotNetworkDataHub.getInstance().getNetworkDataBase().getMysqlPort();
-        System.out.println(host + username + password + database + port);
 
         System.out.println("Starting a quick MySQL connection check, Un momento!");
         try {
@@ -140,11 +142,99 @@ public class DatabaseHub {
                     result.put("duration", getDurationMessage(punishSet.getLong("duration")));
                 }
             }
+
+            connection.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return result;
+    }
+
+    public String nameFromUUID(UUID uuid) {
+        try {
+            Connection connection = createConnection();
+
+            PreparedStatement statement = connection.prepareStatement("SELECT `name` FROM `account` WHERE uuid=?");
+            statement.setString(1, uuid.toString());
+            statement.executeQuery();
+
+            ResultSet resultSet = statement.getResultSet();
+
+            String result = null;
+            if (resultSet.next())
+                result = resultSet.getString("name");
+            else
+                result = "";
+
+            connection.close();
+            return result;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public UUID uuidFromName(String name) {
+        try {
+            Connection connection = createConnection();
+
+            PreparedStatement statement = connection.prepareStatement("SELECT `uuid` FROM `account` WHERE name=?");
+            statement.setString(1,name);
+            statement.executeQuery();
+
+            ResultSet resultSet = statement.getResultSet();
+
+            UUID result = null;
+            if (resultSet.next())
+                result = UUID.fromString(resultSet.getString("uuid"));
+
+            connection.close();
+            return result;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ArrayList<PunishData> playerPunishments(String player) {
+        UUID uuid = uuidFromName(player);
+        ArrayList<PunishData> data = new ArrayList<>();
+
+        try {
+            Connection connection = createConnection();
+
+            PreparedStatement statement = connection.prepareStatement("SELECT * from `punish.history` WHERE uuid=?");
+            statement.setString(1, uuid.toString());
+            ResultSet rs = statement.executeQuery();
+
+
+            while (rs.next()) {
+                PunishData pData = new PunishData();
+                pData.setPunishmentId(rs.getString("punishmentId"));
+                pData.setPlayer(rs.getString("punisher"));
+                pData.setTarget(nameFromUUID(UUID.fromString(rs.getString("uuid"))));
+                pData.setReason(rs.getString("reason"));
+                pData.setType(PunishType.valueOf(rs.getString("type")));
+                pData.setDuration(PunishDuration.valueOf(rs.getString("durationType")));
+                pData.setActive(Boolean.parseBoolean(rs.getString("active")));
+                pData.setDate(rs.getString("date"));
+
+                pData.setRemovedOn(rs.getString("removedOn"));
+                pData.setRemovedBy(rs.getString("removedBy"));
+                pData.setRemovedReason(rs.getString("removedReason"));
+
+                data.add(pData);
+            }
+
+            connection.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return data;
     }
 
 }

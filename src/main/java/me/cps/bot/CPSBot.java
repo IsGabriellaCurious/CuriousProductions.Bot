@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import me.cps.bot.commands.PlayerInfoCommand;
+import me.cps.bot.commands.*;
 import me.cps.bot.database.DatabaseHub;
 import me.cps.bot.networkdata.BotComponentType;
 import me.cps.bot.networkdata.BotNetworkDataHub;
@@ -30,7 +30,7 @@ import java.io.File;
 public class CPSBot {
 
     private static BotData botData;
-    private static String version = "1.0-beta";
+    private static String version = "1.1-beta";
     private static BotNetworkDataHub networkDataHub;
 
     public static void main(String[] args) throws LoginException, InterruptedException {
@@ -44,7 +44,11 @@ public class CPSBot {
         client.setPrefix(botData.getPrefix());
         client.setActivity((Activity.of(botData.getActivityType(), botData.getActivityMessage(), (botData.getActivityUrl().equals("null") ? null : botData.getActivityUrl()))));
         client.addCommands(
-                new PlayerInfoCommand()
+                new PlayerInfoCommand(),
+                new PunishHistoryCommand(),
+                new AboutCommand(),
+                new IpCommand(),
+                new WebsiteCommand()
         );
 
         JDABuilder builder = JDABuilder.createDefault(botData.getToken());

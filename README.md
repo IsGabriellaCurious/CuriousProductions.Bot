@@ -1,7 +1,7 @@
 # CuriousProductions.Bot (BETA)
 Copyright (c) 2020 Gabriella Hotten (see license in LICENSE.md)
 
-Discord Bot for CPS servers. **THIS IS IN BETA AND IS NOT READY TO BE USED**
+Discord Bot for CPS servers. **THIS IS IN BETA AND IS NOT READY FOR PUBLIC USE**
 
 **Setup**
 
